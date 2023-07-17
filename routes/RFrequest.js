@@ -32,10 +32,55 @@ router.get('/refundRequest', (req, res) => {
 
 //create the route and function to get the the Question Answer store according to the status
 
-  router.get('/warehouseRequest', (req, res) => {
-    const query = `SELECT * FROM refundrequest WHERE customerServiceLeaderStatus = "true" AND wareHouseStatus = "false"`;
+router.get('/warehouseRequest', (req, res) => {
+  const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND special = ?`;
+
+  connection.query(query, ["false", false], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+
+  router.get('/warehouseSpecialRequest', (req, res) => {
+    const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND special = ?`;
   
-    connection.query(query, (error, results) => {
+    connection.query(query, ["false", true], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ error: 'An error occurred' });
+      } else {
+        res.json(results);
+      }
+    });
+  });
+  
+  
+
+
+//create the route and function to get the the Question Answer store according to the status
+
+  // router.get('/LeaderStatusRequest', (req, res) => {
+  //   const query = `SELECT * FROM refundrequest WHERE customerServiceStatus = "true" AND customerServiceLeaderStatus = "false" AND special = `;
+  
+  //   connection.query(query, (error, results) => {
+  //     if (error) {
+  //       console.error('Error executing query:', error);
+  //       res.status(500).json({ error: 'An error occurred' });
+  //     } else {
+  //       res.json(results);
+  //     }
+  //   });
+  // });
+
+  router.get('/LeaderStatusRequest', (req, res) => {
+    const query = `SELECT * FROM refundrequest WHERE customerServiceStatus = ? AND CustomerServiceLeaderStatus = ? AND special = ?`;
+  
+    connection.query(query, ["true", "false", false], (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         res.status(500).json({ error: 'An error occurred' });
@@ -46,12 +91,42 @@ router.get('/refundRequest', (req, res) => {
   });
 
 
-//create the route and function to get the the Question Answer store according to the status
-
-  router.get('/LeaderStatusRequest', (req, res) => {
-    const query = `SELECT * FROM refundrequest WHERE customerServiceStatus = "true" AND customerServiceLeaderStatus = "false"`;
+  router.get('/LeaderStatusSpecialRequest', (req, res) => {
+    const query = `SELECT * FROM refundrequest WHERE customerServiceStatus = ? AND CustomerServiceLeaderStatus = ? AND special = ?`;
   
-    connection.query(query, (error, results) => {
+    connection.query(query, ["true", "false", true], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ error: 'An error occurred' });
+      } else {
+        res.json(results);
+      }
+    });
+  });
+
+  router.get('/refundRequest/:orderNumber', (req, res) => {
+
+   const orderNumber = req.params.orderNumber;
+  const query = 'SELECT * FROM refundrequest WHERE orderNumber = ?';
+
+  connection.query(query, [orderNumber], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      if (results.length > 0) {
+        res.json(results[0]); // Assuming you only want to retrieve one record
+      } else {
+        res.status(404).json({ message: 'Refund request not found' });
+      }
+    }
+  });
+  });
+
+  router.get('/warehouseManagerRequest', (req, res) => {
+    const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND special = ?`;
+  
+    connection.query(query, ["true", false], (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         res.status(500).json({ error: 'An error occurred' });
@@ -88,6 +163,7 @@ router.post('/refundRequest/add', (req, res) => {
       customerServiceStatus,
       customerServiceLeaderStatus,
       warehouseStatus,
+      warehouseManagerStatus,
       financeStatus,
       supplierStatus,
       special
@@ -116,6 +192,7 @@ router.post('/refundRequest/add', (req, res) => {
       customerServiceStatus,
       customerServiceLeaderStatus,
       warehouseStatus,
+      warehouseManagerStatus,
       financeStatus,
       supplierStatus,
       special
@@ -124,7 +201,7 @@ router.post('/refundRequest/add', (req, res) => {
     console.log(formData)
   
     let sql =
-      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,	financeStatus,supplierStatus,special) VALUES (?)';
+      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,warehouseManagerStatus,	financeStatus,supplierStatus,special) VALUES (?)';
   
     connection.query(sql, [formData], (err, result) => {
       if (err) {
