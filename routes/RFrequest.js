@@ -32,6 +32,34 @@ router.get('/refundRequest', (req, res) => {
 
 //create the route and function to get the the Question Answer store according to the status
 
+router.get('/allNonSpecialRequest', (req, res) => {
+  const query = `SELECT * FROM refundrequest WHERE special = ?`;
+
+  connection.query(query, [false], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+//create the route and function to get the the Question Answer store according to the status
+
+router.get('/allSpecialRequest', (req, res) => {
+  const query = `SELECT * FROM refundrequest WHERE special = ?`;
+
+  connection.query(query, [true], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+//create the route and function to get the the Question Answer store according to the status
+
 router.get('/warehouseRequest', (req, res) => {
   const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND special = ?`;
 
@@ -50,6 +78,33 @@ router.get('/warehouseRequest', (req, res) => {
     const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND special = ?`;
   
     connection.query(query, ["false", true], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ error: 'An error occurred' });
+      } else {
+        res.json(results);
+      }
+    });
+  });
+
+  router.get('/financeRequest', (req, res) => {
+    const query = `SELECT * FROM refundrequest WHERE warehouseManagerStatus = ? AND financeStatus = ? AND special = ?`;
+  
+    connection.query(query, ["true","false", false], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        res.status(500).json({ error: 'An error occurred' });
+      } else {
+        res.json(results);
+      }
+    });
+  });
+  
+
+  router.get('/financeSpecialRequest', (req, res) => {
+    const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND financeStatus = ? AND CustomerServiceLeaderStatus = ? AND special = ?  `;
+  
+    connection.query(query, ["true","false","true", true], (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         res.status(500).json({ error: 'An error occurred' });
@@ -107,6 +162,7 @@ router.get('/warehouseRequest', (req, res) => {
   router.get('/refundRequest/:orderNumber', (req, res) => {
 
    const orderNumber = req.params.orderNumber;
+   console.log(orderNumber,"manager")
   const query = 'SELECT * FROM refundrequest WHERE orderNumber = ?';
 
   connection.query(query, [orderNumber], (error, results) => {
@@ -124,9 +180,9 @@ router.get('/warehouseRequest', (req, res) => {
   });
 
   router.get('/warehouseManagerRequest', (req, res) => {
-    const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND special = ?`;
+    const query = `SELECT * FROM refundrequest WHERE wareHouseStatus = ? AND warehouseManagerStatus = ? AND special = ?`;
   
-    connection.query(query, ["true", false], (error, results) => {
+    connection.query(query, ["true", "false", false], (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         res.status(500).json({ error: 'An error occurred' });
@@ -139,7 +195,6 @@ router.get('/warehouseRequest', (req, res) => {
 
 
 router.post('/refundRequest/add', (req, res) => {
-    console.log("connect router")
     const {
       orderNumber,
       orderTime,
@@ -158,6 +213,8 @@ router.post('/refundRequest/add', (req, res) => {
       customerBankAccountName,
       customerBankSwift,
       remarks,
+      warehouseImg,
+      financeImg,
       applicantName,
       applicationDate,
       customerServiceStatus,
@@ -187,6 +244,8 @@ router.post('/refundRequest/add', (req, res) => {
       customerBankAccountName,
       customerBankSwift,
       remarks,
+      warehouseImg,
+      financeImg,
       applicantName,
       applicationDate,
       customerServiceStatus,
@@ -201,7 +260,7 @@ router.post('/refundRequest/add', (req, res) => {
     console.log(formData)
   
     let sql =
-      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,warehouseManagerStatus,	financeStatus,supplierStatus,special) VALUES (?)';
+      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, warehouseImg,financeImg, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,warehouseManagerStatus,	financeStatus,supplierStatus,special) VALUES (?)';
   
     connection.query(sql, [formData], (err, result) => {
       if (err) {
@@ -295,6 +354,42 @@ router.post('/refundRequest/add', (req, res) => {
     });
   });
 
+//Here make route to update the  WarehouseManager Status
+  router.put('/updateWarehouseManagerStatus/:orderNumber', (req, res) => {
+    const orderNumber = req.params.orderNumber;
+
+
+    let sql = `UPDATE refundrequest SET warehouseManagerStatus = ? WHERE orderNumber = ?`;
+  
+    connection.query(sql, ["true", orderNumber], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error occurred during data update.');
+      } else {
+        console.log('Successfully updated.');
+        res.json(result);
+      }
+    });
+  });
+
+//Here make route to update the  WarehouseManager Status
+  router.put('/updateFinanceStatus/:orderNumber', (req, res) => {
+    const orderNumber = req.params.orderNumber;
+
+
+    let sql = `UPDATE refundrequest SET financeStatus = ? WHERE orderNumber = ?`;
+  
+    connection.query(sql, ["true", orderNumber], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error occurred during data update.');
+      } else {
+        console.log('Successfully updated.');
+        res.json(result);
+      }
+    });
+  });
+
 
   router.put('/updateLeaderStatus/:orderNumber', (req, res) => {
     const orderNumber = req.params.orderNumber;
@@ -315,10 +410,10 @@ router.post('/refundRequest/add', (req, res) => {
   
 
  
-  router.delete('/refundRequest/delete/:orderNumber', (req, res) => {
+  router.delete('/refundRequest/delete/:id', (req, res) => {
   
-    const sql = `DELETE FROM refundrequest WHERE orderNumber=?`;
-    connection.query(sql, [req.params.orderNumber], function (err, result) {
+    const sql = `DELETE FROM refundrequest WHERE id=?`;
+    connection.query(sql, [req.params.id], function (err, result) {
       if (err) throw err;
       console.log("successfully Delete", result);
       res.json(result);
