@@ -10,6 +10,91 @@ const saltRounds = 10;
 const bodyParser=require('body-parser');
 const app=express();
 app.use(cors());
+const fs = require('fs');
+
+// import multer from "multer" to upload file in backend
+const multer = require("multer") 
+
+// import path from "path" to get the specific path of any file
+const path = require("path")
+
+
+// Set the specific folder to show the file
+router.use(express.static('public'))
+
+
+//create the structure to upload the file with specific name
+
+const warehouseImagesStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/warehouseImages')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
+  }
+})
+const financeImagesStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/financeImages')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
+  }
+})
+
+//declare the multer
+
+const warehouseImagesStorageUpload = multer({
+  storage: warehouseImagesStorage
+})
+const financeImagesStorageUpload = multer({
+  storage: financeImagesStorage
+})
+
+
+router.put('/warehouseImages/:orderNumber', warehouseImagesStorageUpload.fields([{ name: 'images' }]), (req, res) => {
+  const orderNumber = req.params.orderNumber;
+  console.log(orderNumber, "img");
+  
+  // Extract filenames of all images from the uploaded files
+  const allImages = req.files['images']?.map((file) => file.filename);
+
+  let sql = `UPDATE refundrequest SET warehouseImg = ? WHERE orderNumber = ?`;
+  console.log(allImages.join(','))
+
+  connection.query(sql, [[allImages.join(',')], orderNumber], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error occurred during data update.');
+    } else {
+      console.log('Successfully updated.');
+      res.json(result);
+    }
+  });
+});
+
+router.put('/financeImages/:orderNumber', financeImagesStorageUpload.fields([{ name: 'images' }]), (req, res) => {
+  const orderNumber = req.params.orderNumber;
+  console.log(orderNumber, "img");
+  
+  // Extract filenames of all images from the uploaded files
+  const allImages = req.files['images']?.map((file) => file.filename);
+
+  let sql = `UPDATE refundrequest SET financeImg = ? WHERE orderNumber = ?`;
+  console.log(allImages.join(','))
+
+  connection.query(sql, [[allImages.join(',')], orderNumber], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error occurred during data update.');
+    } else {
+      console.log('Successfully updated.');
+      res.json(result);
+    }
+  });
+});
+
+
 
 
 
