@@ -8,6 +8,9 @@ const mysql=require("mysql");
 //here start the link up with the different route from the index.js file
 const usersRouter=require("./routes/RFusers");
 const refundRequestRouter=require("./routes/RFrequest");
+const detectRouter=require("./routes/Detect")
+const translatorRouter=require("./routes/Translator")
+const shopeNameReasonRouter=require("./routes/RFShopNames&Reason")
 // const mallProductsRouter=require("./routes/mallProducts");
 // const eventProductsRouter=require("./routes/eventProduct");
 // const QandARouter=require("./routes/QandA");
@@ -40,6 +43,9 @@ connection.connect((err)=>{
 //create the main route with different 
 app.use("/tht",usersRouter)
 app.use("/tht",refundRequestRouter)
+app.use("/tht",detectRouter)
+app.use("/tht",translatorRouter)
+app.use("/tht",shopeNameReasonRouter)
 // app.use("/tht",mallProductsRouter)
 // app.use("/tht",eventProductsRouter)
 // app.use("/tht",QandARouter)
@@ -49,7 +55,7 @@ app.use("/tht",refundRequestRouter)
 //check the route 
 app.get('/',(req,res)=>{
   res.send({
-    message:"This is the 1st route for THT Refund management system"
+    message:"This is the 1st route for THT Refund,Resend,Repair,Translate,Detect server system"
   })
 })
 

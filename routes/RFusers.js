@@ -173,18 +173,47 @@ router.put('/RFusers/update/admin/:id', (req, res) => {
 
 //create the route and function to update a specific user's admin information according to the email address
 
-router.put('/RFusers/update/admin/:id', (req, res) => {
+router.put('/RFusers/update/:id', (req, res) => {
+  const userId = req.params.id;
+  const editingUser = req.body;
 
 
-  const admin = true;
-  let sql = `UPDATE RFusers SET admin='${true}' WHERE id=?`;
+  // Extract the fields that you want to update
+  const { name, email,phone,role,language,country } = editingUser;
+ 
+
+  // Write the SQL query to update the user's information in the database
+  const sql = `UPDATE RFusers SET name=?, email=?,phone=?,role=?,language=?,country=? WHERE id=?`;
+
+  // Execute the query with the values from the 'editingUser' object
+  connection.query(sql, [name, email,phone,role,language,country, userId], function (err, result) {
+    if (err) {
+      console.error('Error updating user:', err);
+      return res.status(500).json({ error: 'Failed to update user' });
+    }
+
+    console.log('Successfully updated:', result);
+    res.json(result);
+  });
+});
+
+
+
+//create the route and function to delete a specific user information according to the email address
+
+router.delete('/RFusers/delete/:id', (req, res) => {
+  // INSERT INTO `players`(`id`, `name`, `club`) VALUES ('[value-1]','[value-2]','[value-3]')
+  console.log(req.params.id);
+
+
+  const sql = `DELETE FROM RFusers WHERE id=?`;
   connection.query(sql, [req.params.id], function (err, result) {
     if (err) throw err;
-    console.log("successfully updated", result);
-    res.json(result);;
+    console.log("successfully Delete", result);
+    res.json(result);
   });
-
 });
-  
+
+
 
   module.exports=router;
