@@ -285,6 +285,7 @@ router.post('/refundRequest/add', (req, res) => {
       orderTime,
       shopName,
       customerUserName,
+      customerPhoneNo,
       customerOrderNumber,
       orderDate,
       orderAmount,
@@ -316,6 +317,7 @@ router.post('/refundRequest/add', (req, res) => {
       orderTime,
       shopName,
       customerUserName,
+      customerPhoneNo,
       customerOrderNumber,
       orderDate,
       orderAmount,
@@ -345,7 +347,7 @@ router.post('/refundRequest/add', (req, res) => {
     console.log(formData)
   
     let sql =
-      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, warehouseImg,financeImg, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,warehouseManagerStatus,	financeStatus,supplierStatus,special) VALUES (?)';
+      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername,customerPhoneNo, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, warehouseImg,financeImg, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,warehouseManagerStatus,	financeStatus,supplierStatus,special) VALUES (?)';
   
     connection.query(sql, [formData], (err, result) => {
       if (err) {
@@ -367,6 +369,7 @@ router.post('/refundRequest/add', (req, res) => {
       orderTime,
       shopName,
       customerUserName,
+      customerPhoneNo,
       customerOrderNumber,
       orderDate,
       orderAmount,
@@ -389,6 +392,7 @@ router.post('/refundRequest/add', (req, res) => {
       orderTime,
       shopName,
       customerUserName,
+      customerPhoneNo,
       customerOrderNumber,
       orderDate,
       orderAmount,
@@ -408,7 +412,7 @@ router.post('/refundRequest/add', (req, res) => {
     ];
   
     let sql =
-      'UPDATE refundrequest SET orderTime = ?, shopName = ?, customerUsername = ?, customerOrderNumber = ?, orderDate = ?, orderAmount = ?, customerReturnTrackingNumber = ?, refundReason = ?, otherReason = ?, refundAmount = ?, customerReceivingAmount = ?, customerReceivingAccount = ?, customerBankName = ?, customerBankAccountName = ?, customerBankSwift = ?, remarks = ?, applicantName = ?, applicationDate = ?, special= ? WHERE orderNumber = ?';
+      'UPDATE refundrequest SET orderTime = ?, shopName = ?, customerUsername = ?,customerPhoneNo=?, customerOrderNumber = ?, orderDate = ?, orderAmount = ?, customerReturnTrackingNumber = ?, refundReason = ?, otherReason = ?, refundAmount = ?, customerReceivingAmount = ?, customerReceivingAccount = ?, customerBankName = ?, customerBankAccountName = ?, customerBankSwift = ?, remarks = ?, applicantName = ?, applicationDate = ?, special= ? WHERE orderNumber = ?';
   
     connection.query(sql, [...formData, orderNumber], (err, result) => {
       if (err) {

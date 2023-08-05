@@ -7,14 +7,14 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-const bodyParser=require('body-parser');
-const app=express();
+const bodyParser = require('body-parser');
+const app = express();
 app.use(cors());
 
 //create the route and function to add user in database at the time to register their new account
 
 // router.post('/RFusers/add', (req, res) => {
- 
+
 //    email = req.body.email,
 //     password = req.body.password,
 //     name = req.body.name,
@@ -22,9 +22,9 @@ app.use(cors());
 //     role = req.body.role
 //     country = req.body.country,
 //     image = req.body.image,
-  
+
 //       console.log(name,email)
-  
+
 //   bcrypt.hash(password,saltRounds,(err,hash)=>{
 
 //     if(err){
@@ -32,7 +32,7 @@ app.use(cors());
 //     }
 //     else{
 //         let sql = "INSERT INTO RFusers ( email, password, name, phone, role, country, image) VALUES (?,?,?,?,?,?,?)";
-  
+
 //     connection.query(sql, [email, password, name, phone, role, country, image,hash], (err, result) => {
 //       if (err) throw err;
 //       console.log("successfully inserted");
@@ -40,7 +40,7 @@ app.use(cors());
 //     })
 //     }
 //   })
-  
+
 //   });
 
 
@@ -53,7 +53,9 @@ router.post('/RFusers/add', (req, res) => {
   const language = req.body.language;
   const country = req.body.country;
   const image = req.body.image;
-  const admin=req.body.isAdmin
+  const admin = req.body.admin
+
+
 
   bcrypt.hash(password, saltRounds, (err, hash) => {
     if (err) {
@@ -65,7 +67,7 @@ router.post('/RFusers/add', (req, res) => {
 
       connection.query(
         sql,
-        [email, hash, name, phone, role,language, country, image,admin],
+        [email, hash, name, phone, role.join(','), language, country, image, admin],
         (err, result) => {
           if (err) {
             console.error(err);
@@ -81,60 +83,115 @@ router.post('/RFusers/add', (req, res) => {
 });
 
 
-  router.post('/login', (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    
-    connection.query(
-      "SELECT * FROM RFusers WHERE email=?",
-      [email],
-      (err, result) => {
-        if (err) {
-          res.send({ err: err });
-        }
-        if (result.length > 0) {
-          bcrypt.compare(password, result[0]?.password, (err, response) => {
-            if (response) {
-              // req.session.user=result;
-              // console.log(req.session.user)
+router.post('/login', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const role = req.body.role;
+
+  connection.query(
+    "SELECT * FROM RFusers WHERE email=?",
+    [email],
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      }
+
+      if (result.length > 0) {
+        bcrypt.compare(password, result[0]?.password, (err, response) => {
+          if (response) {
+            const isRole = result[0].role.includes(role);
+            console.log(typeof (isRole));
+            if (isRole) {
               res.send(result);
             } else {
-              res.send({ message: "Wrong email/password combination!" });
+              res.send({ message: "User doesn't have the required role" });
             }
-          });
-        } else {
-          res.send({ message: "User doesn't exist" });
-        }
-      }
-    );
-  });
-  
-
-  router.post('/check-user', (req, res) => {
-    const email = req.body.email;
-    
-  
-    // Execute SQL query
-    const sql = 'SELECT * FROM RFusers WHERE email = ?';
-    connection.query(sql, [email], (err, results) => {
-      if (err) {
-        console.error('Error executing query:', err);
-        res.status(500).json({ error: 'Failed to execute query' });
+          } else {
+            res.send({ message: "Wrong email/password combination!" });
+          }
+        });
       } else {
-        if (results.length > 0) {
-          // User with the given email exists
-          res.json({ exists: true });
-        } else {
-          // User with the given email does not exist
-          res.json({ exists: false });
-        }
+        res.send({ message: "User doesn't exist" });
       }
-    });
+    }
+  );
+});
+
+
+router.patch('/changePassword', (req, res) => {
+  const email = req.body.myEmail;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+
+  connection.query(
+    "SELECT * FROM RFusers WHERE email=?",
+    [email],
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      }
+
+      if (result.length > 0) {
+        bcrypt.compare(oldPassword, result[0]?.password, (err, response) => {
+          if (response) {
+            bcrypt.hash(newPassword, saltRounds, (err, hash) => {
+              if (err) {
+                console.error(err);
+                res.status(500).send('Error occurred during password hashing.');
+              } else {
+                connection.query(
+                  "UPDATE RFusers SET password=? WHERE email=?",
+                  [hash, email],
+                  (err, updateResult) => {
+                    if (err) {
+                      console.error(err);
+                      res.status(500).send('Error occurred during password update.');
+                    } else {
+                      console.log('Password successfully updated.');
+                      res.json(updateResult);
+                    }
+                  }
+                );
+              }
+            });
+          } else {
+            res.send({ message: "Wrong email/old password combination!" });
+          }
+        });
+      } else {
+        res.send({ message: "User doesn't exist" });
+      }
+    }
+  );
+});
+
+
+
+router.post('/check-user', (req, res) => {
+  const email = req.body.email;
+
+
+  // Execute SQL query
+  const sql = 'SELECT * FROM RFusers WHERE email = ?';
+  connection.query(sql, [email], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).json({ error: 'Failed to execute query' });
+    } else {
+      if (results.length > 0) {
+        // User with the given email exists
+        res.json({ exists: true });
+      } else {
+        // User with the given email does not exist
+        res.json({ exists: false });
+      }
+    }
   });
+});
 
 
 
-  //create the route and function to got all user information from database
+//create the route and function to got all user information from database
 
 router.get('/allRFusers', (req, res) => {
 
@@ -179,14 +236,14 @@ router.put('/RFusers/update/:id', (req, res) => {
 
 
   // Extract the fields that you want to update
-  const { name, email,phone,role,language,country } = editingUser;
- 
+  const { name, email, phone, role, language, country } = editingUser;
+
 
   // Write the SQL query to update the user's information in the database
   const sql = `UPDATE RFusers SET name=?, email=?,phone=?,role=?,language=?,country=? WHERE id=?`;
 
   // Execute the query with the values from the 'editingUser' object
-  connection.query(sql, [name, email,phone,role,language,country, userId], function (err, result) {
+  connection.query(sql, [name, email, phone, role, language, country, userId], function (err, result) {
     if (err) {
       console.error('Error updating user:', err);
       return res.status(500).json({ error: 'Failed to update user' });
@@ -216,4 +273,4 @@ router.delete('/RFusers/delete/:id', (req, res) => {
 
 
 
-  module.exports=router;
+module.exports = router;
