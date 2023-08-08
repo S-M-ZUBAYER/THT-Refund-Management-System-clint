@@ -37,9 +37,21 @@ router.get('/shopNamesReasons', (req, res) => {
 
 
 router.put('/shopNames', (req, res) => {
-  const newShopNames = req.body;
+  const shopDetails = req.body;
+  console.log(shopDetails)
 
-  let sql = `UPDATE shopNameReasons SET shopNames='${[newShopNames]}' WHERE id=1`;
+  let sql = `UPDATE shopNameReasons SET shopNames='${[shopDetails]}' WHERE id=1`;
+  connection.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("successfully updated", result);
+    res.json(result);;
+  });
+
+});
+router.put('/warehouseNames', (req, res) => {
+  const newWarehouseNames = req.body;
+
+  let sql = `UPDATE shopNameReasons SET warehouseNames='${[newWarehouseNames]}' WHERE id=1`;
   connection.query(sql, function (err, result) {
     if (err) throw err;
     console.log("successfully updated", result);

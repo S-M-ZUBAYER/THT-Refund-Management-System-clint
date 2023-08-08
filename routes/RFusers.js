@@ -208,6 +208,19 @@ router.get('/allRFusers', (req, res) => {
 });
 
 
+router.get('/finance', (req, res) => {
+  const query = `SELECT * FROM RFusers WHERE role LIKE '%~Finance~%'`;
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
 //create the update function for make admin
 
 router.put('/RFusers/update/admin/:id', (req, res) => {
