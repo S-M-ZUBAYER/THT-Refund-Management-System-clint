@@ -284,6 +284,8 @@ router.post('/refundRequest/add', (req, res) => {
       orderNumber,
       orderTime,
       shopName,
+      warehouseName,
+      finance,
       customerUserName,
       customerPhoneNo,
       customerOrderNumber,
@@ -302,7 +304,14 @@ router.post('/refundRequest/add', (req, res) => {
       warehouseImg,
       financeImg,
       applicantName,
+      applicantCountry,
       applicationDate,
+      leaderBy,
+      warehouseBy,
+      warehouseCountry,
+      warehouseManagerBy,
+      financeBy,
+      updateBy,
       customerServiceStatus,
       customerServiceLeaderStatus,
       warehouseStatus,
@@ -317,6 +326,8 @@ router.post('/refundRequest/add', (req, res) => {
       orderNumber,
       orderTime,
       shopName,
+      warehouseName,
+      finance,
       customerUserName,
       customerPhoneNo,
       customerOrderNumber,
@@ -335,7 +346,14 @@ router.post('/refundRequest/add', (req, res) => {
       warehouseImg,
       financeImg,
       applicantName,
+      applicantCountry,
       applicationDate,
+      leaderBy,
+      warehouseBy,
+      warehouseCountry,
+      warehouseManagerBy,
+      financeBy,
+      updateBy,
       customerServiceStatus,
       customerServiceLeaderStatus,
       warehouseStatus,
@@ -349,7 +367,8 @@ router.post('/refundRequest/add', (req, res) => {
     console.log(formData)
   
     let sql =
-      'INSERT INTO refundrequest ( orderNumber,orderTime, shopName, customerUsername,customerPhoneNo, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, warehouseImg,financeImg, applicantName, applicationDate,CustomerServiceStatus,CustomerServiceLeaderStatus,wareHouseStatus,warehouseManagerStatus,	financeStatus,supplierStatus,applicantEmail, special) VALUES (?)';
+  'INSERT INTO refundrequest (orderNumber, orderTime, shopName, warehouseName, finance, customerUsername, customerPhoneNo, customerOrderNumber, orderDate, orderAmount, customerReturnTrackingNumber, refundReason, otherReason, refundAmount, customerReceivingAmount, customerReceivingAccount, customerBankName, customerBankAccountName, customerBankSwift, remarks, warehouseImg, financeImg, applicantName,applicantCountry, applicationDate, leaderBy, warehouseBy, warehouseCountry, warehouseManagerBy, financeBy, updateBy, CustomerServiceStatus, CustomerServiceLeaderStatus, wareHouseStatus, warehouseManagerStatus, financeStatus, supplierStatus, applicantEmail, special) VALUES (?)';
+
   
     connection.query(sql, [formData], (err, result) => {
       if (err) {
@@ -433,10 +452,12 @@ router.post('/refundRequest/add', (req, res) => {
 //Here make route to update the warehouseStatus update
   router.put('/refundRequest/updateWarehouseStatus/:orderNumber', (req, res) => {
     const orderNumber = req.params.orderNumber;
+    const name=req.body.name;
+    const country=req.body.country;
   
-    let sql = `UPDATE refundrequest SET warehouseStatus = ? WHERE orderNumber = ?`;
+    let sql = `UPDATE refundrequest SET warehouseStatus = ?,warehouseBy=?, warehouseCountry=? WHERE orderNumber = ?`;
   
-    connection.query(sql, ["true", orderNumber], (err, result) => {
+    connection.query(sql, ["true",name, country, orderNumber], (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error occurred during data update.');
@@ -486,10 +507,12 @@ router.post('/refundRequest/add', (req, res) => {
 
   router.put('/updateLeaderStatus/:orderNumber', (req, res) => {
     const orderNumber = req.params.orderNumber;
+    const name = req.body.name;
+    console.log(name);
   
-    let sql = `UPDATE refundrequest SET customerServiceLeaderStatus = ? WHERE orderNumber = ?`;
+    const sql = `UPDATE refundrequest SET customerServiceLeaderStatus = ?, leaderBy = ? WHERE orderNumber = ?`;
   
-    connection.query(sql, ["true", orderNumber], (err, result) => {
+    connection.query(sql, [true, name, orderNumber], (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error occurred during data update.');
@@ -499,6 +522,7 @@ router.post('/refundRequest/add', (req, res) => {
       }
     });
   });
+  
   
   
 

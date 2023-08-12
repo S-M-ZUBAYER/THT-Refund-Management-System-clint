@@ -63,11 +63,11 @@ router.post('/RFusers/add', (req, res) => {
       res.status(500).send('Error occurred during password hashing.');
     } else {
       let sql =
-        'INSERT INTO RFusers (email, password, name, phone, role,language, country, image,admin) VALUES (?,?,?,?,?,?,?,?,?)';
+        'INSERT INTO RFusers (email, password, name, phone,warehouseShop, role,language, country, image,admin) VALUES (?,?,?,?,?,?,?,?,?,?)';
 
       connection.query(
         sql,
-        [email, hash, name, phone, role.join(','), language, country, image, admin],
+        [email, hash, name, phone,warehouseShop="", role.join(','), language, country, image, admin],
         (err, result) => {
           if (err) {
             console.error(err);
@@ -103,6 +103,7 @@ router.post('/login', (req, res) => {
             console.log(typeof (isRole));
             if (isRole) {
               res.send(result);
+              console.log(result)
             } else {
               res.send({ message: "User doesn't have the required role" });
             }
@@ -249,14 +250,14 @@ router.put('/RFusers/update/:id', (req, res) => {
 
 
   // Extract the fields that you want to update
-  const { name, email, phone, role, language, country } = editingUser;
+  const { name, email, phone, role, warehouseShop, language, country } = editingUser;
 
 
   // Write the SQL query to update the user's information in the database
-  const sql = `UPDATE RFusers SET name=?, email=?,phone=?,role=?,language=?,country=? WHERE id=?`;
+  const sql = `UPDATE RFusers SET name=?, email=?,phone=?,role=?,warehouseShop=?, language=?,country=? WHERE id=?`;
 
   // Execute the query with the values from the 'editingUser' object
-  connection.query(sql, [name, email, phone, role, language, country, userId], function (err, result) {
+  connection.query(sql, [name, email, phone, role,warehouseShop.join(','), language, country, userId], function (err, result) {
     if (err) {
       console.error('Error updating user:', err);
       return res.status(500).json({ error: 'Failed to update user' });

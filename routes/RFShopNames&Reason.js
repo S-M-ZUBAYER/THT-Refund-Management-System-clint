@@ -36,18 +36,40 @@ router.get('/shopNamesReasons', (req, res) => {
 
 
 
-router.put('/shopNames', (req, res) => {
+router.post('/shopDetails', (req, res) => {
   const shopDetails = req.body;
-  console.log(shopDetails)
 
-  let sql = `UPDATE shopNameReasons SET shopNames='${[shopDetails]}' WHERE id=1`;
-  connection.query(sql, function (err, result) {
-    if (err) throw err;
-    console.log("successfully updated", result);
-    res.json(result);;
+  const { shopeName, finance, warehouses } = shopDetails;
+
+  const sql = `INSERT INTO shopDetails (shopName, finance, warehouses) VALUES (?, ?, ?)`;
+
+  connection.query(sql, [shopeName, finance, JSON.stringify(warehouses)], function (err, result) {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'An error occurred while inserting data.' });
+    } else {
+      console.log('Successfully inserted', result);
+      res.json({ insertId: result.insertId }); // Return the insertId on successful insertion
+    }
   });
-
 });
+
+
+router.get('/shopDetails',(req,res)=>{
+  const query = `SELECT * FROM shopDetails WHERE 1`;
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      res.status(500).json({ error: 'An error occurred' });
+    } else {
+      res.json(results);
+    }
+  });
+})
+
+
+
 router.put('/warehouseNames', (req, res) => {
   const newWarehouseNames = req.body;
 
