@@ -97,6 +97,21 @@ router.put('/reasons', (req, res) => {
 
 });
 
+//create the route and function to delete a specific user information according to the email address
+
+router.delete('/shop/delete/:id', (req, res) => {
+  // INSERT INTO `players`(`id`, `name`, `club`) VALUES ('[value-1]','[value-2]','[value-3]')
+  console.log(req.params.id);
+
+
+  const sql = `DELETE FROM shopDetails WHERE id=?`;
+  connection.query(sql, [req.params.id], function (err, result) {
+    if (err) throw err;
+    console.log("successfully Delete", result);
+    res.json(result);
+  });
+});
+
 // router.put('/shopNames', (req, res) => {
 //   const newShopNames = req.body;
 //   console.log(newShopNames);

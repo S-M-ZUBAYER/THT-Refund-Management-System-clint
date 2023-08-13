@@ -469,31 +469,32 @@ router.post('/refundRequest/add', (req, res) => {
   });
 
 //Here make route to update the  WarehouseManager Status
-  router.put('/updateWarehouseManagerStatus/:orderNumber', (req, res) => {
-    const orderNumber = req.params.orderNumber;
+router.put('/updateWarehouseManagerStatus/:orderNumber', (req, res) => {
+  const orderNumber = req.params.orderNumber;
+  const name = req.body.name;
 
+  let sql = `UPDATE refundrequest SET warehouseManagerStatus = ? , warehouseManagerBy=? WHERE orderNumber = ?`;
 
-    let sql = `UPDATE refundrequest SET warehouseManagerStatus = ? WHERE orderNumber = ?`;
-  
-    connection.query(sql, ["true", orderNumber], (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error occurred during data update.');
-      } else {
-        console.log('Successfully updated.');
-        res.json(result);
-      }
-    });
+  connection.query(sql, ["true", name, orderNumber], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error occurred during data update.');
+    } else {
+      console.log('Successfully updated.');
+      res.json(result);
+    }
   });
+});
+
 
 //Here make route to update the  WarehouseManager Status
   router.put('/updateFinanceStatus/:orderNumber', (req, res) => {
     const orderNumber = req.params.orderNumber;
+    const name = req.body.name;
 
-
-    let sql = `UPDATE refundrequest SET financeStatus = ? WHERE orderNumber = ?`;
+    let sql = `UPDATE refundrequest SET financeStatus = ?, financeBy=? WHERE orderNumber = ?`;
   
-    connection.query(sql, ["true", orderNumber], (err, result) => {
+    connection.query(sql, ["true",name, orderNumber], (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error occurred during data update.');
@@ -512,7 +513,7 @@ router.post('/refundRequest/add', (req, res) => {
   
     const sql = `UPDATE refundrequest SET customerServiceLeaderStatus = ?, leaderBy = ? WHERE orderNumber = ?`;
   
-    connection.query(sql, [true, name, orderNumber], (err, result) => {
+    connection.query(sql, ["true", name, orderNumber], (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error occurred during data update.');
