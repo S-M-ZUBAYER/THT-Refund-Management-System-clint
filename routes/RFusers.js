@@ -257,7 +257,7 @@ router.put('/RFusers/update/:id', (req, res) => {
   const sql = `UPDATE RFusers SET name=?, email=?,phone=?,role=?,warehouseShop=?, language=?,country=? WHERE id=?`;
 
   // Execute the query with the values from the 'editingUser' object
-  connection.query(sql, [name, email, phone, role,warehouseShop.join(','), language, country, userId], function (err, result) {
+  connection.query(sql, [name, email, phone, role,warehouseShop, language, country, userId], function (err, result) {
     if (err) {
       console.error('Error updating user:', err);
       return res.status(500).json({ error: 'Failed to update user' });
