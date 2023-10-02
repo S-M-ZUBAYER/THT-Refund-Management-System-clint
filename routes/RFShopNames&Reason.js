@@ -39,11 +39,11 @@ router.get('/shopNamesReasons', (req, res) => {
 router.post('/shopDetails', (req, res) => {
   const shopDetails = req.body;
 
-  const { shopeName, finance, warehouses } = shopDetails;
+  const {shopName,finance,CustomerServiceLeader,warehouseManager,warehouses} = shopDetails;
 
-  const sql = `INSERT INTO shopDetails (shopName, finance, warehouses) VALUES (?, ?, ?)`;
+  const sql = `INSERT INTO shopDetails (shopName,finance,customerServiceLeader,warehouses,warehouseManager) VALUES (?, ?, ?,?,?)`;
 
-  connection.query(sql, [shopeName, finance, JSON.stringify(warehouses)], function (err, result) {
+  connection.query(sql, [shopName,finance,CustomerServiceLeader, JSON.stringify(warehouses),warehouseManager], function (err, result) {
     if (err) {
       console.error(err);
       res.status(500).json({ message: 'An error occurred while inserting data.' });

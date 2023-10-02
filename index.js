@@ -11,7 +11,7 @@ const refundRequestRouter=require("./routes/RFrequest");
 const detectRouter=require("./routes/Detect")
 const translatorRouter=require("./routes/Translator")
 const shopeNameReasonRouter=require("./routes/RFShopNames&Reason")
-// const mallProductsRouter=require("./routes/mallProducts");
+const OrderPlacementRouter=require("./routes/Order");
 // const eventProductsRouter=require("./routes/eventProduct");
 // const QandARouter=require("./routes/QandA");
 // const iconsRouter=require("./routes/addIcons");
@@ -46,7 +46,7 @@ app.use("/tht",refundRequestRouter)
 app.use("/tht",detectRouter)
 app.use("/tht",translatorRouter)
 app.use("/tht",shopeNameReasonRouter)
-// app.use("/tht",mallProductsRouter)
+app.use("/tht",OrderPlacementRouter)
 // app.use("/tht",eventProductsRouter)
 // app.use("/tht",QandARouter)
 // app.use("/tht",iconsRouter)
